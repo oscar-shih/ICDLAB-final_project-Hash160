@@ -6,14 +6,14 @@ NTUEE IC Design Lab 2022spring Final Project -SHA256 prof.Tzi-Dar, Chiueh
 
 ### How to run SHA256
 ```bash
-gcc sha256.c main.c -o sha256
+cd SHA256 && gcc sha256.c main.c -o sha256
 ```
 ```bash
 ./sha256 <message>
 ```
 ### How to run RIPEMD160
 ```bash
-g++ main.cpp -o ripemd160
+cd RIPEMD160 && g++ main.cpp -o ripemd160
 ```
 ```bash
 ./ripemd160 <message>
