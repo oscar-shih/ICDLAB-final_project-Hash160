@@ -1,7 +1,8 @@
-#include <sstream> // required for 'stringstream'
-#include <iostream> // required for 'cout'
-#include <iomanip> // required for 'setfill'
+#include <sstream>
+#include <iostream> 
+#include <iomanip> 
 #include "ripemd160.c"
+
 using namespace std;
 string uint8_to_hex_string(const uint8_t *v, const size_t s) {
   stringstream ss;
@@ -31,7 +32,6 @@ int main(int argc, char* argv[]) {
   string hexstr = uint8_to_hex_string(hash, hashlen);
 
   cout << hexstr << endl;
-  // e6d64710683e82853342e24f011bc77af21884ad
 
   return 0;
 }
