@@ -4,8 +4,8 @@
 
 NTUEE IC Design Lab 2022spring Final Project -SHA256 prof.Tzi-Dar, Chiueh
 ## Enviroment Setting(Suggestion)
-OS: Ubuntu 20.04 LTS
-GCC Version: 9.4.0
+OS: Ubuntu 20.04 LTS \\
+GCC Version: 9.4.0 \\
 Python Version: 3.7+
 
 ### How to run SHA256
