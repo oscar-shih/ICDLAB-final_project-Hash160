@@ -10,15 +10,12 @@
 module RIPEMD160_stage_1(
                    input wire            clk,
                    input wire            reset_n,
-
                    input wire            init,
                    input wire            next,
-                   input wire            mode,
-
-                   //input wire [511 : 0]  block,
+                   input wire [511 : 0]  block,
 
                    output wire           ready,
-                   output wire [255 : 0] digest,
+                   output wire [159 : 0] digest,
                    output wire           digest_valid
                   );
 
@@ -140,16 +137,16 @@ module RIPEMD160_stage_1(
   //                                    );
 
 
-  // RIPEMD160_w_mem w_mem_inst(
-  //                         .clk(clk),
-  //                         .reset_n(reset_n),
+  RIPEMD160_w_mem w_mem_inst(
+                          .clk(clk),
+                          .reset_n(reset_n),
 
-  //                         .block(block),
+                          .block(block),
 
-  //                         .init(w_init),
-  //                         .next(w_next),
-  //                         .w(w_data)
-  //                        );
+                          .init(w_init),
+                          .next(w_next),
+                          .w(w_data)
+                         );
 
 
   //----------------------------------------------------------------
@@ -286,28 +283,9 @@ module RIPEMD160_stage_1(
   always @*
     begin : t_logic
         reg [31 : 0] f;
-        // reg [33 : 0] roll;
-        reg [31 : 0] rol;
+        reg [31 : 0] roll;
         reg [31:0] ss;
-        // 0 <= j <= 15
-        // case (t_round_ctr_reg)
-            // 0:begin
         f = b_reg ^ c_reg ^ d_reg;
-            // end
-        //     1:begin
-        //         f = (b_reg & c_reg) | (~b_reg & d_reg); 
-        //     end
-        //     2:begin
-        //         f = (b_reg & ~c_reg) ^ d_reg;
-        //     end
-        //     3:begin
-        //         f = (b_reg & d_reg) | (c_reg & ~d_reg);
-        //     end
-        //     4:begin
-        //         f = b_reg ^ (c_reg | ~d_reg);
-        //     end
-        // endcase
-
         roll = a_reg + f + w_data + k;
         // rol = roll[31 : 0];
         ss = { roll[31 : 0] << s[ t_ctr_reg ] | roll[31 : 0] >> (16 - s[t_ctr_reg])};
@@ -426,6 +404,7 @@ module RIPEMD160_stage_1(
       case (RIPEMD160_ctrl_reg)
         CTRL_IDLE:
           begin
+            $display("1");
             ready_flag = 1;
 
             if (init)
@@ -455,6 +434,7 @@ module RIPEMD160_stage_1(
 
 
         CTRL_ROUNDS:
+          $display("1");
           begin
             w_next       = 1;
             state_update = 1;
@@ -470,6 +450,7 @@ module RIPEMD160_stage_1(
 
         CTRL_DONE:
           begin
+            $display("a = %h, b = %h, c = %h", a_reg, b_reg, c_reg);
             digest_update    = 1;
             digest_valid_new = 1;
             digest_valid_we  = 1;
