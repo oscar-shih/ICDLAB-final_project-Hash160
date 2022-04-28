@@ -407,7 +407,7 @@ module RIPEMD160_stage_1_core(
           t_ctr_r <= t_ctr_w;
           state_r <= state_w;
           o_valid_r <= o_valid_w;
-          t_r <= t;
+          // t_r <= t;
     end // reg_update
   end
 endmodule // RIPEMD160_core
