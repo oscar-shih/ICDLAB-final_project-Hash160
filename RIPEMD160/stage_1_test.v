@@ -58,6 +58,7 @@ module RIPEMD160_stage_1_core(
   reg [31:0] w_data_w [0:15];
 
   wire [3:0] s [0:15];
+  wire [3:0] r [0:15];
   wire [31:0] k;
 
   reg o_valid_r, o_valid_w;
@@ -78,6 +79,23 @@ module RIPEMD160_stage_1_core(
   assign s[13] = 4'd7;
   assign s[14] = 4'd9;
   assign s[15] = 4'd8;
+
+  assign r[0] = 4'd0;
+  assign r[1] = 4'd1;
+  assign r[2] = 4'd2;
+  assign r[3] = 4'd3;
+  assign r[4] = 4'd4;
+  assign r[5] = 4'd5;
+  assign r[6] = 4'd6;
+  assign r[7] = 4'd7;
+  assign r[8] = 4'd8;
+  assign r[9] = 4'd9;
+  assign r[10] = 4'd10;
+  assign r[11] = 4'd11;
+  assign r[12] = 4'd12;
+  assign r[13] = 4'd13;
+  assign r[14] = 4'd14;
+  assign r[15] = 4'd15;
   assign k = 32'h00000000;
  
 
@@ -125,16 +143,16 @@ module RIPEMD160_stage_1_core(
           //$display("round = ", t_ctr_r);
           f = b_reg ^ c_reg ^ d_reg;
           //$display("f = %h", f);
-          roll = a_reg + f + w_data[t_ctr_r] + k;
+          roll = a_reg + f + w_data[r[t_ctr_r]] + k;
           //$display("roll = %h, w_data = %h, a_reg = %h", roll[31:0], w_data[t_ctr_r], a_reg);
           rot = (6'd32 - s[t_ctr_r]);
-          roll_s = { roll[31 : 0] << s[ t_ctr_r ] | roll[31 : 0] >> (rot)};
+          roll_s = { roll[31 : 0] << s[t_ctr_r] | roll[31 : 0] >> (rot)};
           // $display("roll_s = %h", roll_s);
           a_new  = e_reg;
+          b_new  = roll_s + e_reg;
           c_new  = b_reg;
+          d_new  = {c_reg<<10 | c_reg>>22};
           e_new  = d_reg;
-          b_new  = roll_s + e_reg; //
-          d_new  = {c_reg<<10 | c_reg>>22}; //
           // $display("a = %h, b = %h, c = %h, d=%h, e=%h", a_new, b_new, c_new, d_new, e_new);
         end
         default: begin
