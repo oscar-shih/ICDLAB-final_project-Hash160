@@ -9,5 +9,5 @@ source /usr/cad/synopsys/CIC/synthesis.cshrc
 ncverilog +access+r stage_1_tb.v stage_1_test.v
 ```
 ```bash
-ncverilog +access+r stage_1_tb.v stage_1_test_syn.v
+ncverilog +access+r stage_1_tb.v stage_1_test_syn.v fsa0m_a_generic_core_21.lib.src +define+SDF
 ```

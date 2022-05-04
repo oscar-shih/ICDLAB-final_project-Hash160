@@ -26,7 +26,7 @@ module RIPEMD160_stage_1(
 
   localparam RIPEMD160_H0_0 = 32'h67452301;
   localparam RIPEMD160_H0_1 = 32'hefcdab89;
-  localparam RIPEMD160_H0_2 = 32'h89badcfe;
+  localparam RIPEMD160_H0_2 = 32'h98badcfe;
   localparam RIPEMD160_H0_3 = 32'h10325476;
   localparam RIPEMD160_H0_4 = 32'hc3d2e1f0;
 
@@ -175,17 +175,13 @@ module RIPEMD160_stage_1(
           c_reg            <= 32'h0;
           d_reg            <= 32'h0;
           e_reg            <= 32'h0;
-        //   f_reg            <= 32'h0;
-        //   g_reg            <= 32'h0;
-        //   h_reg            <= 32'h0;
+        
           H0_reg           <= 32'h0;
           H1_reg           <= 32'h0;
           H2_reg           <= 32'h0;
           H3_reg           <= 32'h0;
           H4_reg           <= 32'h0;
-        //   H5_reg           <= 32'h0;
-        //   H6_reg           <= 32'h0;
-        //   H7_reg           <= 32'h0;
+        
           digest_valid_reg <= 0;
           t_ctr_reg        <= 6'h0;
           RIPEMD160_ctrl_reg  <= CTRL_IDLE;
@@ -200,9 +196,6 @@ module RIPEMD160_stage_1(
               c_reg <= c_new;
               d_reg <= d_new;
               e_reg <= e_new;
-            //   f_reg <= f_new;
-            //   g_reg <= g_new;
-            //   h_reg <= h_new;
             end
 
           if (H_we)
@@ -212,9 +205,6 @@ module RIPEMD160_stage_1(
               H2_reg <= H2_new;
               H3_reg <= H3_new;
               H4_reg <= H4_new;
-            //   H5_reg <= H5_new;
-            //   H6_reg <= H6_new;
-            //   H7_reg <= H7_new;
             end
 
           if (t_ctr_we)
@@ -241,9 +231,7 @@ module RIPEMD160_stage_1(
       H2_new = 32'h0;
       H3_new = 32'h0;
       H4_new = 32'h0;
-    //   H5_new = 32'h0;
-    //   H6_new = 32'h0;
-    //   H7_new = 32'h0;
+
       H_we = 0;
 
         if (digest_init)
@@ -254,10 +242,6 @@ module RIPEMD160_stage_1(
             H2_new = RIPEMD160_H0_2;
             H3_new = RIPEMD160_H0_3;
             H4_new = RIPEMD160_H0_4;
-            // H5_new = RIPEMD160_H0_5;
-            // H6_new = RIPEMD160_H0_6;
-            // H7_new = RIPEMD160_H0_7;
-            
         end
 
       if (digest_update)
@@ -267,9 +251,6 @@ module RIPEMD160_stage_1(
           H2_new = H2_reg + c_reg;
           H3_new = H3_reg + d_reg;
           H4_new = H4_reg + e_reg;
-        //   H5_new = H5_reg + f_reg;
-        //   H6_new = H6_reg + g_reg;
-        //   H7_new = H7_reg + h_reg;
           H_we = 1;
         end
     end // digest_logic
@@ -306,9 +287,7 @@ module RIPEMD160_stage_1(
       c_new  = 32'h0;
       d_new  = 32'h0;
       e_new  = 32'h0;
-    //   f_new  = 32'h0;
-    //   g_new  = 32'h0;
-    //   h_new  = 32'h0;
+
       a_h_we = 0;
 
     if (state_init) begin
@@ -319,9 +298,6 @@ module RIPEMD160_stage_1(
                 c_new  = RIPEMD160_H0_2;
                 d_new  = RIPEMD160_H0_3;
                 e_new  = RIPEMD160_H0_4;
-            //   f_new  = RIPEMD160_H0_5;
-            //   g_new  = RIPEMD160_H0_6;
-            //   h_new  = RIPEMD160_H0_7;
         end
         else begin
             a_new  = H0_reg;
@@ -329,9 +305,6 @@ module RIPEMD160_stage_1(
             c_new  = H2_reg;
             d_new  = H3_reg;
             e_new  = H4_reg;
-            //   f_new  = H5_reg;
-            //   g_new  = H6_reg;
-            //   h_new  = H7_reg;
         end
     end
 
@@ -432,10 +405,9 @@ module RIPEMD160_stage_1(
               end
           end
 
-
         CTRL_ROUNDS:
-          $display("1");
           begin
+            $display("1");
             w_next       = 1;
             state_update = 1;
             t_ctr_inc    = 1;
@@ -446,7 +418,6 @@ module RIPEMD160_stage_1(
                 RIPEMD160_ctrl_we  = 1;
               end
           end
-
 
         CTRL_DONE:
           begin
