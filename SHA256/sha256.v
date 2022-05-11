@@ -1,5 +1,6 @@
 module sha256(
     input clk,
+    input rst_n,
     input [255:0] H_in,
     input [511:0] M_in,
     input input_valid,
@@ -26,10 +27,10 @@ assign output_valid = round == 65;
 sha256_s0 sha256_s0 (.x(W_tm15), .s0(s0_Wtm15));
 sha256_s1 sha256_s1 (.x(W_tm2), .s1(s1_Wtm2));
 //64 k constants output by sequence ->Kj
-sha256_K sha256_K (.clk(clk), .input_valid(input_valid), .K(Kj));
+sha256_K sha256_K (.clk(clk),.rst_n(rst_n), .input_valid(input_valid), .K(Kj));
 //Wj
 sha256_W sha256_W(
-    .clk(clk),
+    .clk(clk),.rst_n(rst_n),
     .M(M_in), .M_valid(input_valid),
     .W_tm2(W_tm2), .W_tm15(W_tm15),
     .s1_Wtm2(s1_Wtm2), .s0_Wtm15(s0_Wtm15),
@@ -38,15 +39,20 @@ sha256_W sha256_W(
 //
 //main block
 sha256_main sha256_main (
-    .clk(clk),.Kj(Kj), .Wj(Wj),
+    .Kj(Kj), .Wj(Wj),
     .a_in(a_q), .b_in(b_q), .c_in(c_q), .d_in(d_q),
     .e_in(e_q), .f_in(f_q), .g_in(g_q), .h_in(h_q),
     .a_out(a_d), .b_out(b_d), .c_out(c_d), .d_out(d_d),
     .e_out(e_d), .f_out(f_d), .g_out(g_d), .h_out(h_d)
 );
 
-always @(posedge clk)
+always @(posedge clk or negedge rst_n)
     begin
+        if (!rst_n) begin
+            a_q <= 32'b0; b_q <= 32'b0; c_q <= 32'b0; d_q <= 32'b0;
+            e_q <= 32'b0; f_q <= 32'b0; g_q <=32'b0; h_q <= 32'b0;
+            round <= 7'b0;
+        end
         if (input_valid==1'b1) begin
             a_q <= a_in; b_q <= b_in; c_q <= c_in; d_q <= d_in;
             e_q <= e_in; f_q <= f_in; g_q <= g_in; h_q <= h_in;
@@ -58,16 +64,28 @@ always @(posedge clk)
             round <= round + 1;
         end
 end
-always @(posedge clk)
+always @(posedge clk or negedge rst_n)
 begin
- a=a_in+a_q;
- b=b_in+b_q;
- c=c_in+c_q;
- d=d_in+d_q;
- e=e_in+e_q;
- f=f_in+f_q;
- g=g_in+g_q;
- h=h_in+h_q;
+    if (!rst_n) begin
+        a<=33'b0;
+        b<=33'b0;
+        c<=33'b0;
+        d<=33'b0;
+        e<=33'b0;
+        f<=33'b0;
+        g<=33'b0;
+        h<=33'b0;
+    end
+    else begin
+        a<=a_in+a_q;
+        b<=b_in+b_q;
+        c<=c_in+c_q;
+        d<=d_in+d_q;
+        e<=e_in+e_q;
+        f<=f_in+f_q;
+        g<=g_in+g_q;
+        h<=h_in+h_q;
+    end
 end
 
 
@@ -76,7 +94,6 @@ endmodule
 
 // round compression function
 module sha256_main (
-    input clk,
     input [31:0] Kj, Wj,
     input [31:0] a_in, b_in, c_in, d_in, e_in, f_in, g_in, h_in,
     output [31:0] a_out, b_out, c_out, d_out, e_out, f_out, g_out, h_out
@@ -147,7 +164,7 @@ endmodule
 
 //output one K by sequence
 //---------------------------------------------------------------------------
-module sha256_K (input clk ,input input_valid ,output [31:0] K);
+module sha256_K (input clk ,rst_n,input input_valid ,output [31:0] K);
     reg [2047:0] rom_q;
     wire [2047:0] rom_d;
     reg  [31:0] K_p;
@@ -173,15 +190,19 @@ module sha256_K (input clk ,input input_valid ,output [31:0] K);
         32'h90befffa, 32'ha4506ceb, 32'hbef9a3f7, 32'hc67178f2
     };
 
-always @(posedge clk)
+always @(posedge clk or negedge rst_n)
 begin
+        if(!rst_n) begin
+            rom_q <= 2048'b0;
+            K_p   <= 32'b0;
+        end
         if (input_valid==1'b1) begin
-            rom_q = rom;
-            K_p   = rom_q[2047:2016];
+            rom_q <= rom;
+            K_p   <= rom[2047:2016];
         end 
         else begin
-            rom_q = rom_d;
-            K_p   = rom_q[2047:2016];
+            rom_q <= rom_d;
+            K_p   <= rom_d[2047:2016];
         end
 end
 endmodule
@@ -199,7 +220,7 @@ endmodule
 //-=-=-=-=-=-=-=--=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // the message schedule: a machine that generates Wt values
 module sha256_W(
-    input clk,
+    input clk,rst_n,
     input [32*16-1:0] M,
     input M_valid,
     output [32-1:0] W_tm2, W_tm15,
@@ -222,17 +243,21 @@ module sha256_W(
     assign W = W_p;
     assign W_stack_d= {W_stack_q[32*15-1:0], Wt_next};
 
-always @(posedge clk)
+always @(posedge clk or negedge rst_n)
 begin
+    if(!rst_n) begin
+        W_stack_q <= 512'b0;
+        W_p <= 32'b0;
+    end
     if (M_valid==1'b1) 
     begin
-        W_stack_q = M;
-        W_p =  W_stack_q[32*16-1:32*15];
+        W_stack_q <= M;
+        W_p <= M[32*16-1:32*15];
     end     
     else 
     begin
-        W_stack_q = W_stack_d;
-        W_p = W_stack_q[32*16-1:32*15];
+        W_stack_q <= W_stack_d;
+        W_p <= W_stack_d[32*16-1:32*15];
     end
 end
 endmodule
