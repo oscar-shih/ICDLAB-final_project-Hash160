@@ -108,7 +108,7 @@ always @(*) begin
             end
         end
         GET_DATA: begin
-            if(i_data_counter_r[6] == 1'b1) begin
+            if(i_data_counter_r[6] == 1 && i_data_counter_r[0] == 1) begin
                 state_w = CALCULATION;
                 start_calc_w = 1'b1;
                 $display("Start Calculation.");
@@ -133,8 +133,8 @@ always @(*) begin
             end
         end
         END: begin
-            state_w = INIT;
-            $display("H0 = %h", H_out);
+            state_w = END;
+            // $display("H0 = %h", H_out);
             start_calc_w = start_calc_r;
         end
     endcase
@@ -207,7 +207,7 @@ always @(*) begin
         input_8x64b_w[62] = input_8x64b_r[62];
         input_8x64b_w[63] = input_8x64b_r[63];
 
-    if(state_r == GET_DATA && i_data_counter_r[6] != 1'b1) begin
+    if(state_r == GET_DATA && i_data_counter_r < 65) begin
         input_8x64b_w[i_data_counter_r] = i_text_r;
         // $display(i_text);
     end

@@ -69,7 +69,7 @@ module Top_tb;
 
             input_test = 8'b10101010; //start signal
 
-            for (j=0; j<64; j=j+1) begin
+            for (j=0; j<65; j=j+1) begin
                 @(posedge clk); // #(`CYCLE)
                 cnt1 = $fscanf(data_in, "%b\n", input_test);
             end
@@ -81,8 +81,8 @@ module Top_tb;
 			$display("Calculation done.");
 			//check answer
             cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
-            if(gold_ans != ans) $display("error!!! gold_out =  %h; out = %h", gold_ans, ans);
-            else $display("Success!!");
+            if(gold_ans !== ans) $display("error!!! gold_out =  %h; out = %h", gold_ans, ans);
+            else $display("Success!!  gold_out =  %h; out = %h", gold_ans, ans);
         end
         #50;
 		
