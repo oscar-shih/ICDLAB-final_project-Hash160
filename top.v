@@ -6,10 +6,12 @@ module top(
     input clk,
     input rst_n,
     input [7:0]  i_text,
+    output   o_valid,
     output [159:0] o_answer
 );
 
 wire ripemd_valid_w;
+reg ripemd_valid_r;
 wire done;
 wire [255:0] H_0_256, H_out;
 reg [7:0] i_data_counter_r, i_data_counter_w;
@@ -82,6 +84,8 @@ parameter GET_DATA = 2'b01;
 parameter CALCULATION = 2'b10;
 parameter END = 2'b11;
 
+assign o_valid = (state_r == END) ? 1'b1 : 1'b0;
+
 always @(*) begin
     start_calc_w = start_calc_r;
     i_data_counter_w = i_data_counter_r;
@@ -92,6 +96,7 @@ always @(*) begin
                 state_w = GET_DATA;
                 start_calc_w = start_calc_r;
                 i_data_counter_w = 9'b0;
+                $display("Start input.");
             end
             else begin
                 state_w = state_r;
@@ -99,24 +104,27 @@ always @(*) begin
             end
         end
         GET_DATA: begin
-            if(i_data_counter_r[7] == 1'b1) begin
+            if(i_data_counter_r[6] == 1'b1) begin
                 state_w = CALCULATION;
                 start_calc_w = 1'b1;
+                $display("Start Calculation.");
             end 
             else begin
                 state_w = state_r;
                 start_calc_w = start_calc_r;
-                i_data_counter_w = i_data_counter_r + 9'b1;
+                i_data_counter_w = i_data_counter_r + 8'b1;
             end
         end
         CALCULATION: begin
             if(done) begin
                 state_w = END;
-                start_calc_w = start_calc_r;
+                start_calc_w = 1'b0;
+                $display("DONE.");
             end
             else begin
                 state_w = state_r;
-                start_calc_w = start_calc_r;
+                start_calc_w = 1'b0;
+                // $display("ripemd_valid_w = ", ripemd_valid_w);
             end
         end
         END: begin
@@ -193,8 +201,9 @@ always @(*) begin
         input_8x64b_w[62] = input_8x64b_r[62];
         input_8x64b_w[63] = input_8x64b_r[63];
 
-    if(state_r == GET_DATA && i_data_counter_r[7] != 1'b1) begin
+    if(state_r == GET_DATA && i_data_counter_r[6] != 1'b1) begin
         input_8x64b_w[i_data_counter_r] = i_text;
+        // $display(i_text);
     end
 end
 
@@ -203,6 +212,7 @@ end
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n) begin
         state_r <= INIT;
+        // ripemd_valid_r <= 0;
         i_data_counter_r <= 7'b0;
         start_calc_r <= 1'b0;
         h0_r <= 32'b0;
@@ -277,6 +287,7 @@ always @(posedge clk or negedge rst_n) begin
     end
     else begin
         state_r <= state_w;
+        // ripemd_valid_r <= ripemd_valid_w;
         i_data_counter_r <= i_data_counter_w;
         start_calc_r <= start_calc_w;
         h0_r <= h0_w;
