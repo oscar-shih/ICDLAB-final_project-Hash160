@@ -24,6 +24,9 @@ reg [31:0] h0_r, h1_r, h2_r, h3_r, h4_r;
 reg [7:0] input_8x64b_r[0:63];
 reg [7:0] input_8x64b_w[0:63];
 
+reg [7:0] i_text_r;
+reg [10:0] counter_r, counter_w;
+
 ///////// Answer Calculation ////////
 localparam RIPEMD160_H0 = 32'h67452301;
 localparam RIPEMD160_H1 = 32'hefcdab89;
@@ -89,10 +92,11 @@ assign o_valid = (state_r == END) ? 1'b1 : 1'b0;
 always @(*) begin
     start_calc_w = start_calc_r;
     i_data_counter_w = i_data_counter_r;
+    counter_w = counter_r;
 
     case(state_r)
         INIT : begin
-            if(i_text != 8'b0) begin
+            if(i_text_r != 8'b0) begin
                 state_w = GET_DATA;
                 start_calc_w = start_calc_r;
                 i_data_counter_w = 9'b0;
@@ -112,10 +116,11 @@ always @(*) begin
             else begin
                 state_w = state_r;
                 start_calc_w = start_calc_r;
-                i_data_counter_w = i_data_counter_r + 8'b1;
+                i_data_counter_w = i_data_counter_r + 9'b1;
             end
         end
         CALCULATION: begin
+            counter_w = counter_r + 1;
             if(done) begin
                 state_w = END;
                 start_calc_w = 1'b0;
@@ -129,6 +134,7 @@ always @(*) begin
         end
         END: begin
             state_w = INIT;
+            $display("H0 = %h", H_out);
             start_calc_w = start_calc_r;
         end
     endcase
@@ -202,7 +208,7 @@ always @(*) begin
         input_8x64b_w[63] = input_8x64b_r[63];
 
     if(state_r == GET_DATA && i_data_counter_r[6] != 1'b1) begin
-        input_8x64b_w[i_data_counter_r] = i_text;
+        input_8x64b_w[i_data_counter_r] = i_text_r;
         // $display(i_text);
     end
 end
@@ -211,6 +217,8 @@ end
 ////////////////// Sequential Part ///////////////////
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n) begin
+        i_text_r <= 0;
+        counter_r <= 0;
         state_r <= INIT;
         // ripemd_valid_r <= 0;
         i_data_counter_r <= 7'b0;
@@ -286,6 +294,8 @@ always @(posedge clk or negedge rst_n) begin
         input_8x64b_r[63] <= 8'b0;
     end
     else begin
+        i_text_r <= i_text;
+        counter_r <= counter_w;
         state_r <= state_w;
         // ripemd_valid_r <= ripemd_valid_w;
         i_data_counter_r <= i_data_counter_w;

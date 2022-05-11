@@ -14,7 +14,7 @@ module Top_tb;
     reg [159:0] gold_ans;
 
     integer i,j;
-    parameter num = 10; //number of answer data
+    parameter num = 1; //number of answer data
 	//module instantiation
     top r0(
                    .clk(clk),
@@ -48,6 +48,8 @@ module Top_tb;
 
 	//initial block
 	initial begin
+        $fsdbDumpfile("top.fsdb");
+	    $fsdbDumpvars(0, "+mda");
 		$display("Testbench Start.");
         rst_n = 1;
         clk = 0;
@@ -66,8 +68,9 @@ module Top_tb;
             rst_n = 1;
 
             input_test = 8'b10101010; //start signal
+
             for (j=0; j<64; j=j+1) begin
-                @(negedge clk); // #(`CYCLE)
+                @(posedge clk); // #(`CYCLE)
                 cnt1 = $fscanf(data_in, "%b\n", input_test);
             end
             $display("Input done.");
