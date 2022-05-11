@@ -14,8 +14,10 @@ reg clk ;
 sha256_H_0 sha256_H_0 (.H_0(H_0_256));
 reg [511:0] M_sha256_abc_r [0:99];
 reg [511:0] M_sha256_abc  ;
+reg rst_n=1;
 sha256 sha256 (
     .clk(clk),
+    .rst_n(rst_n),
     .H_in(H_0_256), .M_in(M_sha256_abc),
     .input_valid(input_valid),
     .H_out(H_out_256),
@@ -23,10 +25,12 @@ sha256 sha256 (
 );
 
 initial begin
+
   $readmemb("256input.txt",M_sha256_abc_r);
   $readmemh("256output.txt",test);
   $display("starting");
   repeat(100)  begin
+  
   tick;
   input_valid = 1'b1;
   tick;
