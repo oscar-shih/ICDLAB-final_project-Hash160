@@ -1,4 +1,4 @@
-# ICDLAB-final_project-SHA256
+# ICDLAB-final_project-HASH160
 
 **Team Member: 石旻翰、蔡帛恩、楊翔淳、王政邦**
 
