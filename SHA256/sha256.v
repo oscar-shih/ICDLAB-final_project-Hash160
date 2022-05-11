@@ -22,7 +22,7 @@ wire [31:0] a_d, b_d, c_d, d_d, e_d, f_d, g_d, h_d;
 wire [31:0] W_tm2, W_tm15, s1_Wtm2, s0_Wtm15, Wj, Kj;
 reg [32:0] a,b,c,d,e,f,g,h;
 assign H_out = {a[31:0], b[31:0], c[31:0], d[31:0], e[31:0], f[31:0], g[31:0], h[31:0]};
-assign output_valid = round == 64;
+assign output_valid = round == 65;
 sha256_s0 sha256_s0 (.x(W_tm15), .s0(s0_Wtm15));
 sha256_s1 sha256_s1 (.x(W_tm2), .s1(s1_Wtm2));
 //64 k constants output by sequence ->Kj
@@ -35,6 +35,7 @@ sha256_W sha256_W(
     .s1_Wtm2(s1_Wtm2), .s0_Wtm15(s0_Wtm15),
     .W(Wj)
 );
+//
 //main block
 sha256_main sha256_main (
     .clk(clk),.Kj(Kj), .Wj(Wj),
@@ -58,15 +59,15 @@ always @(posedge clk)
         end
 end
 always @(posedge clk)
-    begin
-        a=a_in+a_q;
-        b=b_in+b_q;
-        c=c_in+c_q;
-        d=d_in+d_q;
-        e=e_in+e_q;
-        f=f_in+f_q;
-        g=g_in+g_q;
-        h=h_in+h_q;
+begin
+ a=a_in+a_q;
+ b=b_in+b_q;
+ c=c_in+c_q;
+ d=d_in+d_q;
+ e=e_in+e_q;
+ f=f_in+f_q;
+ g=g_in+g_q;
+ h=h_in+h_q;
 end
 
 
@@ -83,7 +84,7 @@ module sha256_main (
     
     wire [31:0] Ch_e_f_g, Maj_a_b_c, S0_a, S1_e;
     wire [32-1:0] T1;
-    wire [32-1:0] T2;
+    wire [32-1:0] T2 ;
 //-----------------------main function---------------------------
 //---------------------------------------------------------------
     Ch Ch (.x(e_in), .y(f_in), .z(g_in), .Ch(Ch_e_f_g));
@@ -143,6 +144,7 @@ module Maj (input wire [32-1:0] x, y, z,output wire [32-1:0] Maj);
 
 endmodule
 //----------------------------------------------------------------------------------------
+
 //output one K by sequence
 //---------------------------------------------------------------------------
 module sha256_K (input clk ,input input_valid ,output [31:0] K);
@@ -152,7 +154,7 @@ module sha256_K (input clk ,input input_valid ,output [31:0] K);
     assign rom_d = {rom_q[2015:0],32'b0};
     assign K =  K_p ;
     wire [2047:0] rom;
-    assign rom = {
+    assign rom= {
         32'h428a2f98, 32'h71374491, 32'hb5c0fbcf, 32'he9b5dba5,
         32'h3956c25b, 32'h59f111f1, 32'h923f82a4, 32'hab1c5ed5,
         32'hd807aa98, 32'h12835b01, 32'h243185be, 32'h550c7dc3,
