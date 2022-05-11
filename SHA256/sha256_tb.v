@@ -32,14 +32,7 @@ initial begin
   tick;
   input_valid = 1'b0;
   tick;
-  input_valid = 1'b0;
-  tick;
-  input_valid = 1'b0;
-  tick;
-  input_valid = 1'b1;
-  tick;
-  input_valid = 1'b0;
-  repeat (86) begin
+  repeat (89) begin
       tick;
   end
   idx=idx+1;
