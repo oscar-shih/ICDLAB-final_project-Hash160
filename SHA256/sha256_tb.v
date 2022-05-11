@@ -62,17 +62,26 @@ endtask
 task dumpstate;
 begin
   M_sha256_abc=M_sha256_abc_r[idx];
+  if(output_valid_256===1'b1)
+  begin
   if(H_out_256===test[idx])
   begin
     $display("MASTER %d" ,ticks/92);
-    //$display("remain %d" ,ticks);
+    $display("output_valid %d",output_valid_256);
+    $display("golden=%64h",  test[idx]);
+    $display("-------------------------------------------------------------------------------------------");
+  end
+  if(H_out_256===test[idx])
+  begin
+    $display("FAIL %d" ,ticks/92);
+    $display("output_valid %d",output_valid_256);
     $display("result=%h",  H_out_256);
     $display("golden=%64h",  test[idx]);
     t=test[idx] ^ H_out_256;
-    //$display("result=%h",  H_out_256);
     $display(" wrong=%h",  t);
     $display("-------------------------------------------------------------------------------------------");
   end
+end
  
 end
 endtask
