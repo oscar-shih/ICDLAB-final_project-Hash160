@@ -71,7 +71,7 @@ begin
     $display("golden=%64h",  test[idx]);
     $display("-------------------------------------------------------------------------------------------");
   end
-  if(H_out_256===test[idx])
+  else
   begin
     $display("FAIL %d" ,ticks/92);
     $display("output_valid %d",output_valid_256);
