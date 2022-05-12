@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 `define CYCLE    10          	         // Modify your clock period here
-`define SDFFILE    "./stage_1_test_syn.sdf"	      // Modify your sdf file name
+`define SDFFILE    "./top.sdf"	      // Modify your sdf file name
 `define NULL 0  
 
 module Top_tb;
@@ -14,7 +14,7 @@ module Top_tb;
     reg [159:0] gold_ans;
 
     integer i,j;
-    parameter num = 1; //number of answer data
+    parameter num = 100; //number of answer data
 	//module instantiation
     top r0(
                    .clk(clk),
@@ -62,27 +62,30 @@ module Top_tb;
         @(posedge clk);
         #(`CYCLE/2);
         for (i=0; i<num; i=i+1) begin
+            cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
             input_test = 8'b0;
             rst_n = 0; 
             #5; 
             rst_n = 1;
-
+            @(posedge clk); // #(`CYCLE)
+            @(posedge clk); // #(`CYCLE)
             input_test = 8'b10101010; //start signal
-
-            for (j=0; j<65; j=j+1) begin
-                @(posedge clk); // #(`CYCLE)
+            @(posedge clk); // #(`CYCLE)
+            for (j=0; j<64; j=j+1) begin
                 cnt1 = $fscanf(data_in, "%b\n", input_test);
+                @(posedge clk); // #(`CYCLE)
             end
-            $display("Input done.");
             input_test = 8'b0;
+            $display("Input done.");
 
-
+            //#(`CYCLE * 150);
+			$display("Calculation done."); 
             @(posedge done);
-			$display("Calculation done.");
 			//check answer
-            cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
+            //cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
             if(gold_ans !== ans) $display("error!!! gold_out =  %h; out = %h", gold_ans, ans);
             else $display("Success!!  gold_out =  %h; out = %h", gold_ans, ans);
+            #10;
         end
         #50;
 		
@@ -91,7 +94,7 @@ module Top_tb;
 	end
 
     initial begin
-        # 50000 $display("Time Exceed.") ;
+        #100000 $display("Time Exceed.") ;
         $finish;
     end
 endmodule
