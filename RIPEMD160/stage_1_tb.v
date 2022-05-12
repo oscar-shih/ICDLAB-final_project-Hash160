@@ -13,7 +13,7 @@ module stage_1_tb;
     // wire [159:0] ans;
 	//module instantiation
 	RIPEMD160_stage_1_core r0(
-                   .clk_p_i(clk),
+                   .clk(clk),
                    .rst_n(rst_n),
                    .i_valid(init),
                    // .next(next),

@@ -47,6 +47,9 @@ def RMD160Final(ctx):
         padlen += 64
     RMD160Update(ctx, PADDING, padlen-8)
     RMD160Update(ctx, size, 8)
+    print(ctx.state)
+    for i in range(len(ctx.state)):
+        print("{:02d}".format(i),"0x{:08x}".format(ctx.state[i]))
     return struct.pack("<5L", *ctx.state)
 
 # -----------------------------------------------------------------------------
@@ -117,12 +120,12 @@ def RMD160Transform(state, block): #uint32 state[5], uchar block[64]
     c, e = R(c, d, e, a, b, F0, K0,  7, 13, x)
     b, d = R(b, c, d, e, a, F0, K0,  9, 14, x)
     a, c = R(a, b, c, d, e, F0, K0,  8, 15, x) #/* #15 */
-    print('output of stage 1 is: ')
-    print('e: ', hex(e))
-    print('a: ', hex(a))
-    print('b: ', hex(b))
-    print('c: ', hex(c))
-    print('d: ', hex(d))
+    #print('output of stage 1 is: ')
+    #print('e: ', hex(e))
+    #print('a: ', hex(a))
+    #print('b: ', hex(b))
+    #print('c: ', hex(c))
+    #print('d: ', hex(d))
     #/* Round 2 */
     e, b = R(e, a, b, c, d, F1, K1,  7,  7, x)
     d, a = R(d, e, a, b, c, F1, K1,  6,  4, x)
@@ -140,12 +143,12 @@ def RMD160Transform(state, block): #uint32 state[5], uchar block[64]
     b, d = R(b, c, d, e, a, F1, K1,  7, 14, x)
     a, c = R(a, b, c, d, e, F1, K1, 13, 11, x)
     e, b = R(e, a, b, c, d, F1, K1, 12,  8, x) #/* #31 */
-    print('output of stage 2 is: ')
-    print('d: ', hex(d))
-    print('e: ', hex(e))
-    print('a: ', hex(a))
-    print('b: ', hex(b))
-    print('c: ', hex(c))
+    #print('output of stage 2 is: ')
+    #print('d: ', hex(d))
+    #print('e: ', hex(e))
+    #print('a: ', hex(a))
+    #print('b: ', hex(b))
+    #print('c: ', hex(c))
     #/* Round 3 */
     d, a = R(d, e, a, b, c, F2, K2, 11,  3, x)
     c, e = R(c, d, e, a, b, F2, K2, 13, 10, x)
@@ -163,12 +166,12 @@ def RMD160Transform(state, block): #uint32 state[5], uchar block[64]
     a, c = R(a, b, c, d, e, F2, K2, 12, 11, x)
     e, b = R(e, a, b, c, d, F2, K2,  7,  5, x)
     d, a = R(d, e, a, b, c, F2, K2,  5, 12, x) #/* #47 */
-    print('output of stage 3 is: ')
-    print('c: ', hex(c))
-    print('d: ', hex(d))
-    print('e: ', hex(e))
-    print('a: ', hex(a))
-    print('b: ', hex(b))
+    #print('output of stage 3 is: ')
+    #print('c: ', hex(c))
+    #print('d: ', hex(d))
+    #print('e: ', hex(e))
+    #print('a: ', hex(a))
+    #print('b: ', hex(b))
     #/* Round 4 */
     c, e = R(c, d, e, a, b, F3, K3, 11,  1, x)
     b, d = R(b, c, d, e, a, F3, K3, 12,  9, x)
@@ -186,12 +189,12 @@ def RMD160Transform(state, block): #uint32 state[5], uchar block[64]
     e, b = R(e, a, b, c, d, F3, K3,  6,  5, x)
     d, a = R(d, e, a, b, c, F3, K3,  5,  6, x)
     c, e = R(c, d, e, a, b, F3, K3, 12,  2, x) #/* #63 */
-    print('output of stage 4 is: ')
-    print('b: ', hex(b))
-    print('c: ', hex(c))
-    print('d: ', hex(d))
-    print('e: ', hex(e))
-    print('a: ', hex(a))
+    #print('output of stage 4 is: ')
+    #print('b: ', hex(b))
+    #print('c: ', hex(c))
+    #print('d: ', hex(d))
+    #print('e: ', hex(e))
+    #print('a: ', hex(a))
     #/* Round 5 */
     b, d = R(b, c, d, e, a, F4, K4,  9,  4, x)
     a, c = R(a, b, c, d, e, F4, K4, 15,  0, x)
@@ -209,12 +212,12 @@ def RMD160Transform(state, block): #uint32 state[5], uchar block[64]
     d, a = R(d, e, a, b, c, F4, K4,  8,  6, x)
     c, e = R(c, d, e, a, b, F4, K4,  5, 15, x)
     b, d = R(b, c, d, e, a, F4, K4,  6, 13, x) #/* #79 */
-    print('output of stage 5 is: ')
-    print('a: ', hex(a))
-    print('b: ', hex(b))
-    print('c: ', hex(c))
-    print('d: ', hex(d))
-    print('e: ', hex(e))
+    #print('output of stage 5 is: ')
+    #print('a: ', hex(a))
+    #print('b: ', hex(b))
+    #print('c: ', hex(c))
+    #print('d: ', hex(d))
+    #print('e: ', hex(e))
 
     aa = a
     bb = b
@@ -313,6 +316,12 @@ def RMD160Transform(state, block): #uint32 state[5], uchar block[64]
     d, a = R(d, e, a, b, c, F0, KK4, 13,  3, x)
     c, e = R(c, d, e, a, b, F0, KK4, 11,  9, x)
     b, d = R(b, c, d, e, a, F0, KK4, 11, 11, x) #/* #79 */
+    #print('output of stage 5 is: ')
+    #print('a: ', hex(a))
+    #print('b: ', hex(b))
+    #print('c: ', hex(c))
+    #print('d: ', hex(d))
+    #print('e: ', hex(e))
 
     t = (state[1] + cc + d) % 0x100000000
     state[1] = (state[2] + dd + e) % 0x100000000
@@ -320,7 +329,12 @@ def RMD160Transform(state, block): #uint32 state[5], uchar block[64]
     state[3] = (state[4] + aa + b) % 0x100000000
     state[4] = (state[0] + bb + c) % 0x100000000
     state[0] = t % 0x100000000
+    print(hex(state[0]))
+    print(hex(state[1]))
+    print(hex(state[2]))
+    print(hex(state[3]))
+    print(hex(state[4]))
 
 string = 'Master Yang'
 print('input bytes string is: ')
-ripemd160(str.encode(string)).hex()
+print(ripemd160(str.encode(string)).hex())

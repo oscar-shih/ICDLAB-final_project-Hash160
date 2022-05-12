@@ -7,7 +7,7 @@
 `timescale 1ns/10ps
 
 module RIPEMD160_stage_1_core(
-                   input wire            clk_p_i,
+                   input wire            clk,
                    input wire            rst_n,
                    input wire            i_valid,
                    input wire [511 : 0]  block,
@@ -253,7 +253,7 @@ module RIPEMD160_stage_1_core(
   // All registers are positive edge triggered with asynchronous
   // active low reset. All registers have write enable.
   //----------------------------------------------------------------
-  always @(posedge clk_p_i or negedge rst_n) begin
+  always @(posedge clk or negedge rst_n) begin
       if (!rst_n) begin
           a_reg  <= 32'h0;
           b_reg  <= 32'h0;

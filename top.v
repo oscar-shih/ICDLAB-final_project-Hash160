@@ -63,7 +63,7 @@ sha256 sha(
 );
 
 RIPEMD160_stage_1_core ripemd160_right(
-    .clk_p_i(clk),
+    .clk(clk),
     .rst_n(rst_n),
     .i_valid(ripemd_valid_w),
     .block({256'b0,H_out}),
