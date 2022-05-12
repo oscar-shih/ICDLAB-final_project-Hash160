@@ -16,7 +16,8 @@ wire [31:0] a2, b2, c2, d2, e2;
 wire [31:0] h0_w, h1_w, h2_w, h3_w, h4_w;
 reg [31:0] h0_r, h1_r, h2_r, h3_r, h4_r;
 
-reg done, done_r;
+reg done_r;
+wire done;
 
 assign o_valid = done_r;
 
@@ -50,7 +51,7 @@ assign h1_w = RIPEMD160_H2 + d1 + e2;
 assign h2_w = RIPEMD160_H3 + e1 + a2;
 assign h3_w = RIPEMD160_H4 + a1 + b2;
 assign h4_w = RIPEMD160_H0 + b1 + c2;
-assign o_answer = {h0_r, h1_r, h2_r, h3_r, h4_r};
+assign ans = {h0_r, h1_r, h2_r, h3_r, h4_r};
 
 
 
