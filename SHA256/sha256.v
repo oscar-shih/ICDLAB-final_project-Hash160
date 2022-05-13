@@ -53,7 +53,7 @@ always @(posedge clk or negedge rst_n)
             e_q <= 32'b0; f_q <= 32'b0; g_q <=32'b0; h_q <= 32'b0;
             round <= 7'b0;
         end
-        if (input_valid==1'b1) begin
+        else if (input_valid==1'b1) begin
             a_q <= a_in; b_q <= b_in; c_q <= c_in; d_q <= d_in;
             e_q <= e_in; f_q <= f_in; g_q <= g_in; h_q <= h_in;
             round <= 7'b0;
@@ -196,7 +196,7 @@ begin
             rom_q <= 2048'b0;
             K_p   <= 32'b0;
         end
-        if (input_valid==1'b1) begin
+        else if (input_valid==1'b1) begin
             rom_q <= rom;
             K_p   <= rom[2047:2016];
         end 
@@ -249,7 +249,7 @@ begin
         W_stack_q <= 512'b0;
         W_p <= 32'b0;
     end
-    if (M_valid==1'b1) 
+    else if (M_valid==1'b1) 
     begin
         W_stack_q <= M;
         W_p <= M[32*16-1:32*15];
