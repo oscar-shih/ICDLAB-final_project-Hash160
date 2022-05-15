@@ -46,14 +46,8 @@ sha256_main sha256_main (
     .e_out(e_d), .f_out(f_d), .g_out(g_d), .h_out(h_d)
 );
 
-always @(posedge clk or negedge rst_n)
+always @(posedge clk)
     begin
-        if(!rst_n) begin
-            a_q <= 32'b0; b_q <= 32'b0; c_q <= 32'b0; d_q <= 32'b0;
-            e_q <= 32'b0; f_q <= 32'b0; g_q <= 32'b0; h_q <= 32'b0;
-            round <= 7'b0;
-        end
-       else begin
         if (input_valid==1'b1) begin
             a_q <= a_in; b_q <= b_in; c_q <= c_in; d_q <= d_in;
             e_q <= e_in; f_q <= f_in; g_q <= g_in; h_q <= h_in;
@@ -64,10 +58,11 @@ always @(posedge clk or negedge rst_n)
             e_q <= e_d; f_q <= f_d; g_q <= g_d; h_q <= h_d;
             round <= round + 1;
         end
-    end
 end
+
 always @(posedge clk)
 begin
+
  a=a_in+a_q;
  b=b_in+b_q;
  c=c_in+c_q;
