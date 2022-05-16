@@ -1,5 +1,5 @@
-`include "ripemd160.v"
-`include "ripemd160_2.v"
+`include "./RIPEMD160/ripemd160.v"
+`include "./RIPEMD160/ripemd160_2.v"
 
 module ripemd_final(
                    input wire            clk,
