@@ -1,7 +1,7 @@
 //`include "./ripemd160.v"
 //`include "./ripemd160_2.v"
-`include "./ripemd_final.v"
-`include "./sha256.v"
+`include "./RIPEMD160/ripemd_final.v"
+`include "./SHA256/sha256.v"
 
 module top(
     input clk,
