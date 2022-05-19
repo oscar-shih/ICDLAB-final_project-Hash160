@@ -7,11 +7,11 @@ module Top_tb;
 
 	//pins
     reg [7:0] input_test;
-    wire [159:0] ans;
+    wire [31:0] ans;
 
     reg clk, rst_n, next, init;
     wire ready, done;
-    reg [159:0] gold_ans;
+    reg [31:0] gold_ans;
 
     integer i,j;
     parameter num = 100; //number of answer data
@@ -35,7 +35,7 @@ module Top_tb;
 
     initial begin
         data_in = $fopen("top_input_split.txt","r");
-        gold_out = $fopen("top_output.txt","r");
+        gold_out = $fopen("top_output_split.txt","r");
         if (data_in == `NULL) begin
             $display("input_file handle was NULL.");
             $finish;
@@ -62,7 +62,6 @@ module Top_tb;
         @(posedge clk);
         #(`CYCLE/2);
         for (i=0; i<num; i=i+1) begin
-            cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
             input_test = 8'b0;
             rst_n = 0; 
             #5; 
@@ -81,10 +80,17 @@ module Top_tb;
             //#(`CYCLE * 150);
 			$display("Calculation done."); 
             @(posedge done);
+            for(j=0; j<5; j=j+1) begin
+                cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
+                @(posedge clk);
+                if(gold_ans !== ans) $display("%derror!!! gold_out =  %h; out = %h",i, gold_ans, ans);
+                else $display("%dSuccess!!  gold_out =  %h; out = %h",i, gold_ans, ans);
+            end
+
 			//check answer
             //cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
-            if(gold_ans !== ans) $display("%derror!!! gold_out =  %h; out = %h",i, gold_ans, ans);
-            else $display("%dSuccess!!  gold_out =  %h; out = %h",i, gold_ans, ans);
+            //if(gold_ans !== ans) $display("%derror!!! gold_out =  %h; out = %h",i, gold_ans, ans);
+            //else $display("%dSuccess!!  gold_out =  %h; out = %h",i, gold_ans, ans);
             #10;
         end
         #50;

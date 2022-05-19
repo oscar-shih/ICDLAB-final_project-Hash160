@@ -1,19 +1,21 @@
 `include "./ripemd_final.v"
-`include "./sha256.v"
+`include "./ripemd160_1.v"
+`include "./ripemd160_2.v"
+`include "./sha256_test2.v"
 
 module top(
     input clk,
     input rst_n,
     input [7:0]  i_text,
     output   o_valid,
-    output [159:0] o_answer
+    output [31:0] o_answer
 );
 
 wire ripemd_valid_w;
 wire done_calculation;
 wire [255:0] H_0_256, H_out;
 reg [6:0] i_data_counter_r, i_data_counter_w;
-reg [1:0] state_r, state_w;
+reg [2:0] state_r, state_w;
 reg start_calc_r, start_calc_w;
 wire [31:0] a1, b1, c1, d1, e1;
 wire [31:0] a2, b2, c2, d2, e2;
@@ -22,20 +24,20 @@ reg [31:0] h0_r, h1_r, h2_r, h3_r, h4_r;
 reg [7:0] input_8x64b_r[0:63];
 reg [7:0] input_8x64b_w[0:63];
 
+reg [2:0] output_ctr, output_ctr_w;
+// wire [2:0] output_ctr_w;
 reg [7:0] i_text_r;
 
-wire [159:0] answer_w;
+wire [159:0] answer_w, shift_ans_w;
 reg [159:0] answer_r;
-
-///////// Answer Calculation ////////
-assign o_answer = answer_r;
+reg [31:0] o_answer_r, o_answer_w;
 
 ///////// Module instantiation ////////
-sha256_H_0 sha256_H_0 (.H_0(H_0_256));
+//sha256_H_0 sha256_H_0 (.H_0(H_0_256));
 
 sha256 sha(
     .clk(clk),
-    .H_in(H_0_256),
+    //.H_in(H_0_256),
     .rst_n(rst_n),
     .M_in({input_8x64b_r[0], input_8x64b_r[1], input_8x64b_r[2], input_8x64b_r[3], input_8x64b_r[4], input_8x64b_r[5], input_8x64b_r[6], input_8x64b_r[7],
            input_8x64b_r[8], input_8x64b_r[9], input_8x64b_r[10], input_8x64b_r[11], input_8x64b_r[12], input_8x64b_r[13], input_8x64b_r[14], input_8x64b_r[15],
@@ -60,12 +62,13 @@ ripemd_final ripemd160(
 );
 
 ////////////////// FSM LOGIC ///////////////////
-parameter INIT = 2'b00;
-parameter GET_DATA = 2'b01;
-parameter CALCULATION = 2'b10;
-parameter END = 2'b11;
+parameter INIT = 3'b000;
+parameter GET_DATA = 3'b001;
+parameter CALCULATION = 3'b010;
+parameter OUTPUT_DATA = 3'b011;
+parameter END = 3'b100;
 
-assign o_valid = (state_r == END) ? 1'b1 : 1'b0;
+assign o_valid = (output_ctr > 0) ? 1'b1 : 1'b0;
 
 always @(*) begin
     start_calc_w = start_calc_r;
@@ -98,7 +101,7 @@ always @(*) begin
         end
         CALCULATION: begin
             if(done_calculation) begin
-                state_w = END;
+                state_w = OUTPUT_DATA;
                 start_calc_w = 1'b0;
                 $display("DONE.");
             end
@@ -106,6 +109,14 @@ always @(*) begin
                 state_w = state_r;
                 start_calc_w = 1'b0;
                 i_data_counter_w = 7'b0;
+            end
+        end
+        OUTPUT_DATA: begin
+            if(output_ctr == 4) begin
+                state_w = END;
+            end
+            else begin
+                state_w = state_r;
             end
         end
         END: begin
@@ -186,10 +197,24 @@ always @(*) begin
         input_8x64b_w[i_data_counter_r] = i_text_r;
         //$display("input[0] = %b",input_8x64b_r[0]);
     end
-    
 end
 
+always @(*) begin
+    if(state_r == OUTPUT_DATA) begin
+        output_ctr_w = output_ctr + 3'b1;
+    end
+    else begin
+        output_ctr_w = 0;
+    end    
+end
 
+////////////////// output Logic ///////////////////
+always @(*) begin
+    o_answer_w = answer_r[159:159-31] ;    
+end
+
+assign o_answer = o_answer_r;
+assign shift_ans_w = (state_r == CALCULATION)  ? answer_w : {answer_r[159-31:0], 32'b0};
 ////////////////// Sequential Part ///////////////////
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n) begin
@@ -267,6 +292,8 @@ always @(posedge clk or negedge rst_n) begin
         input_8x64b_r[62] <= 8'b0;
         input_8x64b_r[63] <= 8'b0;
         answer_r <= 160'b0;
+        o_answer_r <= 32'b0;
+        output_ctr <= 3'b0;
     end
     else begin
         i_text_r <= i_text;
@@ -342,7 +369,9 @@ always @(posedge clk or negedge rst_n) begin
         input_8x64b_r[61] <= input_8x64b_w[61];
         input_8x64b_r[62] <= input_8x64b_w[62];
         input_8x64b_r[63] <= input_8x64b_w[63];
-        answer_r <= answer_w;
+        answer_r <= shift_ans_w;
+        o_answer_r <= o_answer_w;
+        output_ctr <= output_ctr_w;
     end
 end
 
