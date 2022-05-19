@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 `define CYCLE    10          	         // Modify your clock period here
-`define SDFFILE    "./stage_2_test.sdf"	      // Modify your sdf file name
+`define SDFFILE    "./ripemd_final.sdf"	      // Modify your sdf file name
 
 module ripemd160_tb;
 
