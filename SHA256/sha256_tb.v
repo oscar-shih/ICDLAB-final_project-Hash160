@@ -8,14 +8,12 @@ reg input_valid = 0;
 wire output_valid_256;
 integer idx=0;
 wire [255:0] H_0_256, H_out_256;
-reg [255:0]test[0:99];
-reg [255:0]t;
-reg [31:0] ticks = 0;
-reg clk ;
 sha256_H_0 sha256_H_0 (.H_0(H_0_256));
-reg [511:0] M_sha256_abc_r [0:99];
+reg [511:0] M_sha256_abc_r  [0:99];
+reg [255:0] test            [0:99];
 reg [511:0] M_sha256_abc  ;
 reg rst_n;
+reg clk ;
 sha256 sha256 (
     .clk(clk),
     .rst_n(rst_n),
