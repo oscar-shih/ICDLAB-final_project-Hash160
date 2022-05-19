@@ -9,6 +9,8 @@ module sha256(
     );
 
 reg [8:0] round;
+reg input_ready_r;
+reg input_ready_w;
 wire [31:0] a_in,b_in,c_in,d_in,e_in,f_in,g_in,h_in;
 assign a_in = H_in[255:224];
 assign b_in = H_in[223:192];
@@ -27,19 +29,18 @@ assign output_valid = round == 65;
 sha256_s0 sha256_s0 (.x(W_tm15), .s0(s0_Wtm15));
 sha256_s1 sha256_s1 (.x(W_tm2), .s1(s1_Wtm2));
 //64 k constants output by sequence ->Kj
-sha256_K sha256_K (.clk(clk), .input_valid(input_valid), .K(Kj));
+sha256_K sha256_K (.clk(clk), .input_valid(input_ready_r), .K(Kj));
 //Wj
 sha256_W sha256_W(
     .clk(clk),
-    .M(M_in), .M_valid(input_valid),
+    .M(M_in), .M_valid(input_ready_r),
     .W_tm2(W_tm2), .W_tm15(W_tm15),
     .s1_Wtm2(s1_Wtm2), .s0_Wtm15(s0_Wtm15),
     .W(Wj)
 );
-//
 //main block
 sha256_main sha256_main (
-    .clk(clk),.Kj(Kj), .Wj(Wj),
+    .Kj(Kj), .Wj(Wj),
     .a_in(a_q), .b_in(b_q), .c_in(c_q), .d_in(d_q),
     .e_in(e_q), .f_in(f_q), .g_in(g_q), .h_in(h_q),
     .a_out(a_d), .b_out(b_d), .c_out(c_d), .d_out(d_d),
@@ -48,7 +49,7 @@ sha256_main sha256_main (
 
 always @(posedge clk)
     begin
-        if (input_valid==1'b1) begin
+        if (!input_ready_r) begin
             a_q <= a_in; b_q <= b_in; c_q <= c_in; d_q <= d_in;
             e_q <= e_in; f_q <= f_in; g_q <= g_in; h_q <= h_in;
             round <= 7'b0;
@@ -58,6 +59,24 @@ always @(posedge clk)
             e_q <= e_d; f_q <= f_d; g_q <= g_d; h_q <= h_d;
             round <= round + 1;
         end
+end
+always @(*)
+    begin
+        if (input_valid==1'b1) begin
+            input_ready_w = 1'b1;
+        end 
+        else begin
+            input_ready_w = input_ready_r;
+        end
+end
+always @(posedge clk or negedge rst_n)
+    begin
+        if(!rst_n) begin
+        input_ready_r <= 0;
+    end
+    else begin
+        input_ready_r <= input_ready_w;
+    end
 end
 
 always @(posedge clk)
@@ -79,7 +98,6 @@ endmodule
 
 // round compression function
 module sha256_main (
-    input clk,
     input [31:0] Kj, Wj,
     input [31:0] a_in, b_in, c_in, d_in, e_in, f_in, g_in, h_in,
     output [31:0] a_out, b_out, c_out, d_out, e_out, f_out, g_out, h_out
@@ -178,7 +196,7 @@ module sha256_K (input clk ,input input_valid ,output [31:0] K);
 
 always @(posedge clk)
 begin
-        if (input_valid==1'b1) begin
+        if (!input_valid) begin
             rom_q = rom;
             K_p   = rom_q[2047:2016];
         end 
@@ -227,7 +245,7 @@ module sha256_W(
 
 always @(posedge clk)
 begin
-    if (M_valid==1'b1) 
+    if (!M_valid)
     begin
         W_stack_q = M;
         W_p =  W_stack_q[32*16-1:32*15];

@@ -1,5 +1,3 @@
-//`include "./ripemd160.v"
-//`include "./ripemd160_2.v"
 `include "./ripemd_final.v"
 `include "./sha256.v"
 
@@ -30,24 +28,7 @@ wire [159:0] answer_w;
 reg [159:0] answer_r;
 
 ///////// Answer Calculation ////////
-// localparam RIPEMD160_H0 = 32'h67452301;
-// localparam RIPEMD160_H1 = 32'hefcdab89;
-// localparam RIPEMD160_H2 = 32'h98badcfe;
-// localparam RIPEMD160_H3 = 32'h10325476;
-// localparam RIPEMD160_H4 = 32'hc3d2e1f0;
-
-// assign h0_w = RIPEMD160_H1 + c1 + d2;
-// assign h1_w = RIPEMD160_H2 + d1 + e2;
-// assign h2_w = RIPEMD160_H3 + e1 + a2;
-// assign h3_w = RIPEMD160_H4 + a1 + b2;
-// assign h4_w = RIPEMD160_H0 + b1 + c2;
-// assign o_answer = {h0_r[7:0],h0_r[15:8],h0_r[23:16],h0_r[31:24],h1_r[7:0],h1_r[15:8],h1_r[23:16],h1_r[31:24]
-// ,h2_r[7:0],h2_r[15:8],h2_r[23:16],h2_r[31:24],h3_r[7:0],h3_r[15:8],h3_r[23:16],h3_r[31:24]
-// ,h4_r[7:0],h4_r[15:8],h4_r[23:16],h4_r[31:24]};
-
 assign o_answer = answer_r;
-
-
 
 ///////// Module instantiation ////////
 sha256_H_0 sha256_H_0 (.H_0(H_0_256));
@@ -55,7 +36,7 @@ sha256_H_0 sha256_H_0 (.H_0(H_0_256));
 sha256 sha(
     .clk(clk),
     .H_in(H_0_256),
-    //.rst_n(rst_n),
+    .rst_n(rst_n),
     .M_in({input_8x64b_r[0], input_8x64b_r[1], input_8x64b_r[2], input_8x64b_r[3], input_8x64b_r[4], input_8x64b_r[5], input_8x64b_r[6], input_8x64b_r[7],
            input_8x64b_r[8], input_8x64b_r[9], input_8x64b_r[10], input_8x64b_r[11], input_8x64b_r[12], input_8x64b_r[13], input_8x64b_r[14], input_8x64b_r[15],
            input_8x64b_r[16], input_8x64b_r[17], input_8x64b_r[18], input_8x64b_r[19], input_8x64b_r[20], input_8x64b_r[21], input_8x64b_r[22], input_8x64b_r[23], 
@@ -69,7 +50,7 @@ sha256 sha(
     .output_valid(ripemd_valid_w)
 );
 
-ripemd_final ripemd160_right(
+ripemd_final ripemd160(
     .clk(clk),
     .rst_n(rst_n),
     .i_valid(ripemd_valid_w),
@@ -77,25 +58,6 @@ ripemd_final ripemd160_right(
     .o_valid(done_calculation),
     .ans(answer_w)
 );
-
-// RIPEMD160_stage_1_core ripemd160_right(
-//     .clk(clk),
-//     .rst_n(rst_n),
-//     .i_valid(ripemd_valid_w),
-//     .block({64'd256, 191'b0,1'b1,H_out}),
-//     .o_valid(done_calculation),
-//     .ans({a1,b1,c1,d1,e1})
-// );
-
-// RIPEMD160_stage_2_core ripemd160_left(
-//     .clk(clk),
-//     .rst_n(rst_n),
-//     .i_valid(ripemd_valid_w),
-//     .block({64'd256, 191'b0,1'b1,H_out}),
-//     .o_valid(), //done_calculation
-//     .ans({a2,b2,c2,d2,e2})
-// );
-
 
 ////////////////// FSM LOGIC ///////////////////
 parameter INIT = 2'b00;

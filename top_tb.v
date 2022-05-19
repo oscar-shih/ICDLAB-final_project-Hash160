@@ -34,7 +34,7 @@ module Top_tb;
     integer data_in, gold_out, cnt1, cnt2;
 
     initial begin
-        data_in = $fopen("top_input.txt","r");
+        data_in = $fopen("top_input_split.txt","r");
         gold_out = $fopen("top_output.txt","r");
         if (data_in == `NULL) begin
             $display("input_file handle was NULL.");
@@ -55,8 +55,8 @@ module Top_tb;
         clk = 0;
         init = 0;
         input_test = 8'b0;
-        #10 rst_n = 0;
-        #10 rst_n = 1;
+        //#10 rst_n = 0;
+        //#10 rst_n = 1;
         // @(posedge ready);
 		// #50;
         @(posedge clk);
