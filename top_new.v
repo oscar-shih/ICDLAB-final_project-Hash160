@@ -1,6 +1,6 @@
 //`include "./ripemd160.v"
 //`include "./ripemd160_2.v"
-`include "./t_ripemd_final.v"
+`include "./ripemd_final.v"
 `include "./sha256.v"
 
 module top(
