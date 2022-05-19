@@ -73,6 +73,7 @@ assign o_valid = (output_ctr > 0) ? 1'b1 : 1'b0;
 always @(*) begin
     start_calc_w = start_calc_r;
     i_data_counter_w = i_data_counter_r;
+    state_w = state_r;
 
     case(state_r)
         INIT : begin
