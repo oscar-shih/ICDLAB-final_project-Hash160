@@ -15,7 +15,7 @@ module Top_tb;
     reg Valid;
 
     integer i,j;
-    parameter num = 10; //number of answer data
+    parameter num = 100; //number of answer data
 	//module instantiation
     top r0(
                    .clk(clk),
