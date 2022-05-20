@@ -6,9 +6,10 @@
 module top(
     input clk,
     input rst_n,
+    input i_valid,
     input [7:0]  i_text,
     output   o_valid,
-    output [31:0] o_answer
+    output [15:0] o_answer
 );
 
 wire ripemd_valid_w;
@@ -24,7 +25,7 @@ reg [31:0] h0_r, h1_r, h2_r, h3_r, h4_r;
 reg [7:0] input_8x64b_r[0:63];
 reg [7:0] input_8x64b_w[0:63];
 
-reg [2:0] output_ctr, output_ctr_w;
+reg [3:0] output_ctr, output_ctr_w;
 // wire [2:0] output_ctr_w;
 reg [7:0] i_text_r;
 
@@ -77,7 +78,7 @@ always @(*) begin
 
     case(state_r)
         INIT : begin
-            if(i_text_r != 8'b0) begin
+            if(i_valid) begin
                 state_w = GET_DATA;
                 start_calc_w = start_calc_r;
                 i_data_counter_w = 7'b0;
@@ -113,7 +114,7 @@ always @(*) begin
             end
         end
         OUTPUT_DATA: begin
-            if(output_ctr == 4) begin
+            if(output_ctr == 9) begin
                 state_w = END;
             end
             else begin
@@ -211,11 +212,11 @@ end
 
 ////////////////// output Logic ///////////////////
 always @(*) begin
-    o_answer_w = answer_r[159:159-31] ;    
+    o_answer_w = answer_r[159:159-15] ;    
 end
 
 assign o_answer = o_answer_r;
-assign shift_ans_w = (state_r == CALCULATION)  ? answer_w : {answer_r[159-31:0], 32'b0};
+assign shift_ans_w = (state_r == CALCULATION)  ? answer_w : {answer_r[159-16:0], 16'b0};
 ////////////////// Sequential Part ///////////////////
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n) begin

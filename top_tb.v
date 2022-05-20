@@ -7,11 +7,12 @@ module Top_tb;
 
 	//pins
     reg [7:0] input_test;
-    wire [31:0] ans;
+    wire [15:0] ans;
 
     reg clk, rst_n, next, init;
     wire ready, done;
-    reg [31:0] gold_ans;
+    reg [15:0] gold_ans;
+    reg Valid;
 
     integer i,j;
     parameter num = 10; //number of answer data
@@ -19,6 +20,7 @@ module Top_tb;
     top r0(
                    .clk(clk),
                    .rst_n(rst_n),
+                   .i_valid(Valid),
                    .i_text(input_test),
                    .o_answer(ans),
                    .o_valid(done)
@@ -64,24 +66,26 @@ module Top_tb;
         #(`CYCLE/2);
         for (i=0; i<num; i=i+1) begin
             input_test = 8'b0;
+            Valid = 0;
             rst_n = 0; 
             #5; 
             rst_n = 1;
             @(posedge clk); // #(`CYCLE)
             @(posedge clk); // #(`CYCLE)
-            input_test = 8'b10101010; //start signal
+            //input_test = 8'b10101010; //start signal
             @(posedge clk); // #(`CYCLE)
+            Valid = 1;
             for (j=0; j<64; j=j+1) begin
                 cnt1 = $fscanf(data_in, "%b\n", input_test);
                 @(posedge clk); // #(`CYCLE)
             end
-            input_test = 8'b0;
+            input_test = 8'b0;  Valid = 0;
             $display("Input done.");
 
             //#(`CYCLE * 150);
 			$display("Calculation done."); 
             @(posedge done);
-            for(j=0; j<5; j=j+1) begin
+            for(j=0; j<10; j=j+1) begin
                 @(negedge clk);
                 if(gold_ans !== ans) $display("%derror!!! gold_out =  %h; out = %h",i, gold_ans, ans);
                 else $display("%dSuccess!!  gold_out =  %h; out = %h",i, gold_ans, ans);
