@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-`define CYCLE    10          	         // Modify your clock period here
+`define CYCLE    10         	         // Modify your clock period here
 `define SDFFILE    "./top.sdf"	      // Modify your sdf file name
 `define NULL 0  
 
@@ -14,7 +14,7 @@ module Top_tb;
     reg [31:0] gold_ans;
 
     integer i,j;
-    parameter num = 100; //number of answer data
+    parameter num = 10; //number of answer data
 	//module instantiation
     top r0(
                    .clk(clk),
@@ -51,6 +51,7 @@ module Top_tb;
         $fsdbDumpfile("top.fsdb");
 	    $fsdbDumpvars(0, "+mda");
 		$display("Testbench Start.");
+       cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
         rst_n = 1;
         clk = 0;
         init = 0;
@@ -81,10 +82,10 @@ module Top_tb;
 			$display("Calculation done."); 
             @(posedge done);
             for(j=0; j<5; j=j+1) begin
-                cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
-                @(posedge clk);
+                @(negedge clk);
                 if(gold_ans !== ans) $display("%derror!!! gold_out =  %h; out = %h",i, gold_ans, ans);
                 else $display("%dSuccess!!  gold_out =  %h; out = %h",i, gold_ans, ans);
+                cnt2 = $fscanf(gold_out, "%h\n", gold_ans);
             end
 
 			//check answer
