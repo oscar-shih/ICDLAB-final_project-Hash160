@@ -359,9 +359,9 @@ for text in range(100):
     print('result:',result)
     fout2.write(result)
     fout2.write('\n')
-    output32=re.findall(r'\w{8}',result)
+    output16=re.findall(r'\w{4}',result)
     ##print(input8)
-    for string in output32:
+    for string in output16:
         fout3.write(string)
         fout3.write('\n')
     ##==============================================
