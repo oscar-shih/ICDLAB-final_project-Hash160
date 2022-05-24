@@ -1,0 +1,49 @@
+Version: 1 
+
+Orient: R90
+Pad: CORNER0            NW  CORNERD
+Pad: ipad_clk           N   
+Pad: ipad_rst_n         N    
+Pad: ipad_i_valid       N    
+Pad: ipad_CoreVDD1      N   VCCKD
+Pad: ipad_CoreVSS1      N   GNDKD
+Pad: ipad_i_text_0      N   
+Pad: ipad_i_text_1      N 
+Pad: ipad_i_text_2      N   
+Pad: ipad_i_text_3      N   
+
+Orient: R0 
+Pad: CORNER1            NE  CORNERD
+Pad: ipad_i_text_4      W   
+Pad: ipad_i_text_5      W 
+Pad: ipad_i_text_6      W   
+Pad: ipad_i_text_7      W    
+Pad: ipad_IOVDD1        W   VCC3IOD
+Pad: ipad_IOVSS1        W   GNDIOD
+Pad: ipad_o_valid       W
+Pad: ipad_o_answer_0    W   
+Pad: ipad_o_answer_1    W   
+
+Orient: R180
+Pad: CORNER2            SW  CORNERD
+Pad: ipad_o_answer_2    S
+Pad: ipad_o_answer_3    S  
+Pad: ipad_o_answer_4    S   
+Pad: ipad_o_answer_5    S    
+Pad: ipad_CoreVSS2      S   GNDKD
+Pad: ipad_CoreVDD2      S   VCCKD
+Pad: ipad_o_answer_6    S   
+Pad: ipad_o_answer_7    S   
+Pad: ipad_o_answer_8    S 
+
+Orient: R270
+Pad: CORNER3            SE  CORNERD
+Pad: ipad_o_answer_9    E   
+Pad: ipad_o_answer_10   E   
+Pad: ipad_o_answer_11   E 
+Pad: ipad_o_answer_12   E     
+Pad: ipad_IOVDD2        E   VCC3IOD
+Pad: ipad_IOVSS2        E   GNDIOD
+Pad: ipad_o_answer_13   E    
+Pad: ipad_o_answer_14   E   
+Pad: ipad_o_answer_15   E   
