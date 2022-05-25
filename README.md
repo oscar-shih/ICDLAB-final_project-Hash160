@@ -9,6 +9,12 @@ OS: Ubuntu 20.04 LTS
 GCC Version: 9.4.0 
 
 Python Version: 3.7+
+
+### How to run CHIP.v 
+```bash
+ncverilog top_tb.v CHIP.v -v fsa0m_a_generic_core_21.lib.src fsa0m_a_t33_generic_io_21.lib.src +define+SDF
+```
+
 ### How to run top_syn.v
 ```bash
 ncverilog +access+r top_tb.v top_syn.v fsa0m_a_generic_core_21.lib.src +define+SDF
