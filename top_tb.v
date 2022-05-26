@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-`define CYCLE    10         	         // Modify your clock period here
+`define CYCLE    10      	         // Modify your clock period here
 `define SDFFILE    "./top.sdf"	      // Modify your sdf file name
 `define NULL 0  
 
