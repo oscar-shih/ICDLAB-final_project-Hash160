@@ -1,17 +1,26 @@
 module sha256(
     input clk,
     input rst_n,
-    input [255:0] H_in,
+    //input [255:0] H_in,
     input [511:0] M_in,
     input input_valid,
     output [255:0] H_out,
     output output_valid
     );
 
-reg [8:0] round;
+reg [6:0] round;
+reg [6:0] round_w;
 reg input_ready_r;
 reg input_ready_w;
+reg output_valid_r;
+
 wire [31:0] a_in,b_in,c_in,d_in,e_in,f_in,g_in,h_in;
+wire [255:0] H_in;
+
+assign H_in = {
+        32'h6A09E667, 32'hBB67AE85, 32'h3C6EF372, 32'hA54FF53A,
+        32'h510E527F, 32'h9B05688C, 32'h1F83D9AB, 32'h5BE0CD19
+};
 assign a_in = H_in[255:224];
 assign b_in = H_in[223:192];
 assign c_in = H_in[191:160];
@@ -25,14 +34,15 @@ wire [31:0] a_d, b_d, c_d, d_d, e_d, f_d, g_d, h_d;
 wire [31:0] W_tm2, W_tm15, s1_Wtm2, s0_Wtm15, Wj, Kj;
 reg [32:0] a,b,c,d,e,f,g,h;
 assign H_out = {a[31:0], b[31:0], c[31:0], d[31:0], e[31:0], f[31:0], g[31:0], h[31:0]};
-assign output_valid = round == 65;
+assign output_valid = output_valid_r;
 sha256_s0 sha256_s0 (.x(W_tm15), .s0(s0_Wtm15));
 sha256_s1 sha256_s1 (.x(W_tm2), .s1(s1_Wtm2));
 //64 k constants output by sequence ->Kj
-sha256_K sha256_K (.clk(clk), .input_valid(input_ready_r), .K(Kj));
+sha256_K sha256_K (.clk(clk), .rst_n(rst_n), .input_valid(input_ready_r), .K(Kj));
 //Wj
 sha256_W sha256_W(
     .clk(clk),
+    .rst_n(rst_n),
     .M(M_in), .M_valid(input_ready_r),
     .W_tm2(W_tm2), .W_tm15(W_tm15),
     .s1_Wtm2(s1_Wtm2), .s0_Wtm15(s0_Wtm15),
@@ -46,18 +56,31 @@ sha256_main sha256_main (
     .a_out(a_d), .b_out(b_d), .c_out(c_d), .d_out(d_d),
     .e_out(e_d), .f_out(f_d), .g_out(g_d), .h_out(h_d)
 );
+always @(*) begin 
+    round_w = round + 9'b1;
+    if(round==65) output_valid_r=1;
+    else output_valid_r=0;
+end
 
-always @(posedge clk)
+
+always @(posedge clk or negedge rst_n)
     begin
-        if (!input_ready_r) begin
-            a_q <= a_in; b_q <= b_in; c_q <= c_in; d_q <= d_in;
-            e_q <= e_in; f_q <= f_in; g_q <= g_in; h_q <= h_in;
+        if(!rst_n) begin
+            a_q <= 0; b_q <= 0; c_q <= 0; d_q <= 0;
+            e_q <= 0; f_q <= 0; g_q <= 0; h_q <= 0;
             round <= 7'b0;
-        end 
+        end
         else begin
-            a_q <= a_d; b_q <= b_d; c_q <= c_d; d_q <= d_d;
-            e_q <= e_d; f_q <= f_d; g_q <= g_d; h_q <= h_d;
-            round <= round + 1;
+            if (!input_ready_r) begin
+                a_q <= a_in; b_q <= b_in; c_q <= c_in; d_q <= d_in;
+                e_q <= e_in; f_q <= f_in; g_q <= g_in; h_q <= h_in;
+                round <= 7'b0;
+            end 
+            else begin
+                a_q <= a_d; b_q <= b_d; c_q <= c_d; d_q <= d_d;
+                e_q <= e_d; f_q <= f_d; g_q <= g_d; h_q <= h_d;
+                round <= round_w;
+            end
         end
 end
 always @(*)
@@ -71,7 +94,7 @@ always @(*)
 end
 always @(posedge clk or negedge rst_n)
     begin
-        if(!rst_n) begin
+    if(!rst_n) begin
         input_ready_r <= 0;
     end
     else begin
@@ -79,17 +102,28 @@ always @(posedge clk or negedge rst_n)
     end
 end
 
-always @(posedge clk)
+always @(posedge clk or negedge rst_n)
 begin
-
- a=a_in+a_q;
- b=b_in+b_q;
- c=c_in+c_q;
- d=d_in+d_q;
- e=e_in+e_q;
- f=f_in+f_q;
- g=g_in+g_q;
- h=h_in+h_q;
+if(!rst_n) begin
+    a<=0;
+    b<=0;
+    c<=0;
+    d<=0;
+    e<=0;
+    f<=0;
+    g<=0;
+    h<=0; 
+end
+else begin
+    a<=a_in+a_q;
+    b<=b_in+b_q;
+    c<=c_in+c_q;
+    d<=d_in+d_q;
+    e<=e_in+e_q;
+    f<=f_in+f_q;
+    g<=g_in+g_q;
+    h<=h_in+h_q; 
+end
 end
 
 
@@ -102,28 +136,38 @@ module sha256_main (
     input [31:0] a_in, b_in, c_in, d_in, e_in, f_in, g_in, h_in,
     output [31:0] a_out, b_out, c_out, d_out, e_out, f_out, g_out, h_out
     );
-    
+    reg [31:0] a_out_r, b_out_r, c_out_r, d_out_r, e_out_r, f_out_r, g_out_r, h_out_r;
     wire [31:0] Ch_e_f_g, Maj_a_b_c, S0_a, S1_e;
-    wire [32-1:0] T1;
-    wire [32-1:0] T2 ;
+    reg [32-1:0] T1;
+    reg [32-1:0] T2 ;
 //-----------------------main function---------------------------
 //---------------------------------------------------------------
     Ch Ch (.x(e_in), .y(f_in), .z(g_in), .Ch(Ch_e_f_g));
     Maj  Maj (.x(a_in), .y(b_in), .z(c_in), .Maj(Maj_a_b_c));
     sha256_S0 S0 (.x(a_in), .S0(S0_a));
     sha256_S1 S1 (.x(e_in), .S1(S1_e));
+    assign a_out=a_out_r;
+    assign b_out=b_out_r;
+    assign c_out=c_out_r;
+    assign d_out=d_out_r;
+    assign e_out=e_out_r;
+    assign f_out=f_out_r;
+    assign g_out=g_out_r;
+    assign h_out=h_out_r;
+    always @(*) begin
 //----------------------------------------------------------------
-    assign T1 = h_in + S1_e + Ch_e_f_g + Kj + Wj;
-    assign T2= S0_a + Maj_a_b_c;
+    T1 = h_in + S1_e + Ch_e_f_g + Kj + Wj;
+   T2= S0_a + Maj_a_b_c;
 //-----------------------------------------------------------------
-    assign a_out = T1 + T2;
-    assign b_out = a_in;
-    assign c_out = b_in;
-    assign d_out = c_in;
-    assign e_out = d_in + T1;
-    assign f_out = e_in;
-    assign g_out = f_in;
-    assign h_out = g_in;
+     a_out_r = T1 + T2;
+     b_out_r = a_in;
+     c_out_r = b_in;
+     d_out_r = c_in;
+     e_out_r = d_in + T1;
+     f_out_r = e_in;
+     g_out_r = f_in;
+    h_out_r = g_in;
+    end
 
 endmodule
 //--------------------sub model------------------------
@@ -168,7 +212,7 @@ endmodule
 
 //output one K by sequence
 //---------------------------------------------------------------------------
-module sha256_K (input clk ,input input_valid ,output [31:0] K);
+module sha256_K (input clk , input rst_n, input input_valid ,output [31:0] K);
     reg [2047:0] rom_q;
     wire [2047:0] rom_d;
     reg  [31:0] K_p;
@@ -194,26 +238,32 @@ module sha256_K (input clk ,input input_valid ,output [31:0] K);
         32'h90befffa, 32'ha4506ceb, 32'hbef9a3f7, 32'hc67178f2
     };
 
-always @(posedge clk)
+always @(posedge clk or negedge rst_n)
 begin
-        if (!input_valid) begin
-            rom_q = rom;
-            K_p   = rom_q[2047:2016];
+    if(!rst_n) begin
+        rom_q <= 0;
+        K_p   <= 0;
+    end
+    else begin
+       if (!input_valid) begin
+            rom_q <= rom;
+            K_p   <= rom[2047:2016];
         end 
         else begin
-            rom_q = rom_d;
-            K_p   = rom_q[2047:2016];
-        end
+            rom_q <= rom_d;
+            K_p   <= rom_d[2047:2016];
+        end 
+    end
 end
 endmodule
 //------------------------------------------------------------------------------------------------
 
-module sha256_H_0(output [255:0] H_0);
-    assign H_0 = {
-        32'h6A09E667, 32'hBB67AE85, 32'h3C6EF372, 32'hA54FF53A,
-        32'h510E527F, 32'h9B05688C, 32'h1F83D9AB, 32'h5BE0CD19
-    };
-endmodule
+// module sha256_H_0(output [255:0] H_0);
+//     assign H_0 = {
+//         32'h6A09E667, 32'hBB67AE85, 32'h3C6EF372, 32'hA54FF53A,
+//         32'h510E527F, 32'h9B05688C, 32'h1F83D9AB, 32'h5BE0CD19
+//     };
+// endmodule
 
 
 
@@ -221,6 +271,7 @@ endmodule
 // the message schedule: a machine that generates Wt values
 module sha256_W(
     input clk,
+    input rst_n,
     input [32*16-1:0] M,
     input M_valid,
     output [32-1:0] W_tm2, W_tm15,
@@ -243,17 +294,24 @@ module sha256_W(
     assign W = W_p;
     assign W_stack_d= {W_stack_q[32*15-1:0], Wt_next};
 
+
 always @(posedge clk)
 begin
-    if (!M_valid)
-    begin
-        W_stack_q = M;
-        W_p =  W_stack_q[32*16-1:32*15];
-    end     
-    else 
-    begin
-        W_stack_q = W_stack_d;
-        W_p = W_stack_q[32*16-1:32*15];
+    if(!rst_n) begin
+        W_stack_q <= 0;
+        W_p <= 0;
+    end
+    else begin
+        if (!M_valid)
+        begin
+            W_stack_q <= M;
+            W_p <= M [32*16-1:32*15];
+        end     
+        else 
+        begin
+            W_stack_q <= W_stack_d;
+            W_p <= W_stack_d[32*16-1:32*15];
+        end
     end
 end
 endmodule
