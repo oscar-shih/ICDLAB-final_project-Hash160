@@ -63,6 +63,7 @@ module RIPEMD160_stage_2_core(
   wire [31:0] k [0:4];
 
   reg o_valid_r, o_valid_w;
+  reg [159:0] ans_reg;
 
   assign {s[0],s[1],s[2],s[3],s[4],s[5],s[6],s[7],s[8],s[9],s[10],s[11],s[12],s[13],s[14],s[15]} = 
   {4'd8,4'd9,4'd9,4'd11,4'd13,4'd15,4'd15,4'd5,4'd7,4'd7,4'd8,4'd11,4'd14,4'd14,4'd12,4'd6};
@@ -105,7 +106,15 @@ module RIPEMD160_stage_2_core(
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
 
-  assign ans = {a_reg, b_reg, c_reg, d_reg, e_reg};
+  assign ans = ans_reg;
+
+  always @(posedge clk or negedge rst_n) begin
+    if(!rst_n) begin
+      ans_reg <= 160'b0;
+    end else begin
+      ans_reg <= {a_reg, b_reg, c_reg, d_reg, e_reg};      
+    end
+  end
 
   assign o_valid = o_valid_w;
 
@@ -230,7 +239,7 @@ module RIPEMD160_stage_2_core(
         CTRL_ROUNDS:
           begin
             //$display("2");
-            if (t_ctr_r == RIPEMD160_ROUNDS - 1) begin
+            if (t_ctr_r == RIPEMD160_ROUNDS) begin
                 state_w = CTRL_DONE;
             end
             else begin
