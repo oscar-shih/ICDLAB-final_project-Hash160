@@ -12,7 +12,7 @@ reg [6:0] round;
 reg [6:0] round_w;
 reg input_ready_r;
 reg input_ready_w;
-reg output_valid_r;
+reg output_valid_w, output_valid_r;
 
 wire [31:0] a_in,b_in,c_in,d_in,e_in,f_in,g_in,h_in;
 wire [255:0] H_in;
@@ -58,8 +58,17 @@ sha256_main sha256_main (
 );
 always @(*) begin 
     round_w = round + 9'b1;
-    if(round==65) output_valid_r=1;
-    else output_valid_r=0;
+    if(round==64) output_valid_w=1;
+    else output_valid_w = 0;
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if(!rst_n) begin
+        output_valid_r <= 1'b0;
+    end
+    else begin
+        output_valid_r <= output_valid_w;
+    end
 end
 
 
