@@ -245,13 +245,15 @@ begin
         K_p   <= 0;
     end
     else begin
-       if (!input_valid) begin
-            rom_q <= rom;
-            K_p   <= rom[2047:2016];
-        end 
-        else begin
+       if (input_valid) begin
+            
             rom_q <= rom_d;
             K_p   <= rom_d[2047:2016];
+        end 
+        else begin
+            rom_q <= rom;
+            K_p   <= rom[2047:2016];
+           
         end 
     end
 end
@@ -278,40 +280,45 @@ module sha256_W(
     input [32-1:0] s1_Wtm2, s0_Wtm15,
     output [32-1:0] W
     );
+    reg [31:0] W_r,W_tm2_r,W_tm15_r;
     reg [32*16-1:0] W_stack_q;
     reg [32-1:0] W_p;
-    wire [32*16-1:0] W_stack_d ;
-    wire [32-1:0] Wt_next;
-    wire [32-1:0] W_tm7;
-    wire [32-1:0] W_tm16;
+    reg [32*16-1:0] W_stack_d ;
+    reg valid;
+    reg [32-1:0] Wt_next;
+    reg [32-1:0] W_tm7;
+    reg [32-1:0] W_tm16;
+assign W=W_p;
+assign W_tm2=W_tm2_r;
+assign W_tm15=W_tm15_r;
 
-    assign W_tm2 = W_stack_q[32*2-1:32*1];
-    assign W_tm7 = W_stack_q[32*7-1:32*6];
-    assign W_tm15 = W_stack_q[32*15-1:32*14];
-    assign W_tm16 = W_stack_q[32*16-1:32*15];
+always @(*) begin
+    W_tm2_r = W_stack_q[32*2-1:32*1];
+    W_tm7 = W_stack_q[32*7-1:32*6];
+     W_tm15_r = W_stack_q[32*15-1:32*14];
     // Wt_next is the next Wt to be pushed to the queue, will be consumed in 16 rounds
-    assign Wt_next = s1_Wtm2 + W_tm7 + s0_Wtm15 + W_tm16;
-    assign W = W_p;
-    assign W_stack_d= {W_stack_q[32*15-1:0], Wt_next};
+    Wt_next = s1_Wtm2 + W_tm7 + s0_Wtm15 + W_stack_q[32*16-1:32*15];
+    W_stack_d= {W_stack_q[32*15-1:0], Wt_next};
 
-
+end
 always @(posedge clk)
 begin
-    if(!rst_n) begin
-        W_stack_q <= 0;
-        W_p <= 0;
-    end
-    else begin
-        if (!M_valid)
-        begin
-            W_stack_q <= M;
-            W_p <= M [32*16-1:32*15];
+    // if(!rst_n) begin
+    //     W_stack_q <= 0;
+    //     W_p <= 0;
+    // end
+    // else begin
+        if (M_valid)
+        begin  
+            W_stack_q <= W_stack_d;
+            W_p <= W_stack_d[32*16-1:32*15];
         end     
         else 
         begin
-            W_stack_q <= W_stack_d;
-            W_p <= W_stack_d[32*16-1:32*15];
+            W_stack_q <= M;
+            W_p <= M [32*16-1:32*15];
+            
         end
-    end
+   // end
 end
 endmodule
