@@ -25623,7 +25623,7 @@ module CHIP ( clk, rst_n, i_valid, i_text, o_valid, o_answer );
        wire [7:0] in_text;
        wire [15:0] out_ans;
        wire i_clk, i_rst_n, in_valid, out_valid;
-       wire logic0, logic1;
+       wire n_logic0, n_logic1;
        top top(
               .clk(i_clk),
               .rst_n(i_rst_n),
