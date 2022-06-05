@@ -303,11 +303,11 @@ always @(*) begin
 end
 always @(posedge clk)
 begin
-    // if(!rst_n) begin
-    //     W_stack_q <= 0;
-    //     W_p <= 0;
-    // end
-    // else begin
+    if(!rst_n) begin
+        W_stack_q <= 0;
+        W_p <= 0;
+    end
+    else begin
         if (M_valid)
         begin  
             W_stack_q <= W_stack_d;
@@ -319,6 +319,6 @@ begin
             W_p <= M [32*16-1:32*15];
             
         end
-   // end
+   end
 end
 endmodule

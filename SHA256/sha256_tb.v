@@ -17,7 +17,8 @@ reg clk ;
 sha256 sha256 (
     .clk(clk),
     .rst_n(rst_n),
-    .H_in(H_0_256), .M_in(M_sha256_abc),
+    // .H_in(H_0_256),
+    .M_in(M_sha256_abc),
     .input_valid(input_valid),
     .H_out(H_out_256),
     .output_valid(output_valid_256)
