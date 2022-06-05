@@ -223,9 +223,12 @@ endmodule
 //---------------------------------------------------------------------------
 module sha256_K (input clk , input rst_n, input input_valid ,output [31:0] K);
     reg [2047:0] rom_q;
-    wire [2047:0] rom_d;
+    reg [2047:0] rom_d;
+    wire [2047:0] rom_q_w;
+    wire [2047:0] rom_d_w;
     reg  [31:0] K_p;
-    assign rom_d = {rom_q[2015:0],32'b0};
+    assign rom_d_w = rom_d;
+    assign rom_q_w = rom_q;
     assign K =  K_p ;
     wire [2047:0] rom;
     assign rom= {
@@ -250,17 +253,19 @@ module sha256_K (input clk , input rst_n, input input_valid ,output [31:0] K);
 always @(posedge clk or negedge rst_n)
 begin
     if(!rst_n) begin
+        rom_d <= 0;
         rom_q <= 0;
         K_p   <= 0;
     end
     else begin
        if (input_valid) begin
-            
-            rom_q <= rom_d;
-            K_p   <= rom_d[2047:2016];
+            rom_d <= {rom_q_w[2015:0],32'b0};
+            rom_q <= {rom_q_w[2015:0],32'b0};
+            K_p   <= rom_d_w[2047:2016];
         end 
         else begin
-            rom_q <= rom;
+            rom_d <= {rom[2015:0],32'b0};
+            rom_q <= {rom[2015:0],32'b0};
             K_p   <= rom[2047:2016];
            
         end 
@@ -297,7 +302,7 @@ module sha256_W(
     reg [32-1:0] Wt_next;
     reg [32-1:0] W_tm7;
     reg [32-1:0] W_tm16;
-assign W=W_p;
+assign W = W_p;
 assign W_tm2=W_tm2_r;
 assign W_tm15=W_tm15_r;
 
@@ -307,10 +312,9 @@ always @(*) begin
      W_tm15_r = W_stack_q[32*15-1:32*14];
     // Wt_next is the next Wt to be pushed to the queue, will be consumed in 16 rounds
     Wt_next = s1_Wtm2 + W_tm7 + s0_Wtm15 + W_stack_q[32*16-1:32*15];
-    W_stack_d= {W_stack_q[32*15-1:0], Wt_next};
-
+    W_stack_d = {W_stack_q[32*15-1:0], Wt_next};
 end
-always @(posedge clk)
+always @(posedge clk or negedge rst_n)
 begin
     if(!rst_n) begin
         W_stack_q <= 0;
