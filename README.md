@@ -10,7 +10,15 @@ GCC Version: 9.4.0
 
 Python Version: 3.7+
 
-### How to run CHIP.v 
+### DRC/LVS
+1. DRC:
+* http://www2.cic.org.tw/~shuttle/drc/all/U18.pdf
+* Compare the DRC_error.txt to this PDF, there is no violation.
+2. LVS:
+* It shows a smile face in lvs_test.rep, so it is passed.
+
+
+### How to run CHIP.v Posim
 ```bash
 ncverilog top_tb.v CHIP.v -v fsa0m_a_generic_core_21.lib.src fsa0m_a_t33_generic_io_21.lib.src +define+SDF
 ```
