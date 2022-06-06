@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
-`define CYCLE    10      	         // Modify your clock period here
-`define SDFFILE    "./top.sdf"	      // Modify your sdf file name
+`define CYCLE   9    	         // Modify your clock period here
+`define SDFFILE    "./CHIP.sdf"	      // Modify your sdf file name
 `define NULL 0  
 
 module Top_tb;
@@ -17,7 +17,7 @@ module Top_tb;
     integer i,j;
     parameter num = 100; //number of answer data
 	//module instantiation
-    top r0(
+    CHIP r0(
                    .clk(clk),
                    .rst_n(rst_n),
                    .i_valid(Valid),
@@ -62,7 +62,7 @@ module Top_tb;
         //#10 rst_n = 1;
         // @(posedge ready);
 		// #50;
-        @(posedge clk);
+        @(negedge clk);
         #(`CYCLE/2);
         for (i=0; i<num; i=i+1) begin
             input_test = 8'b0;
@@ -70,14 +70,14 @@ module Top_tb;
             rst_n = 0; 
             #5; 
             rst_n = 1;
-            @(posedge clk); // #(`CYCLE)
-            @(posedge clk); // #(`CYCLE)
+            @(negedge clk); // #(`CYCLE)
+            @(negedge clk); // #(`CYCLE)
             //input_test = 8'b10101010; //start signal
-            @(posedge clk); // #(`CYCLE)
+            @(negedge clk); // #(`CYCLE)
             Valid = 1;
             for (j=0; j<64; j=j+1) begin
                 cnt1 = $fscanf(data_in, "%b\n", input_test);
-                @(posedge clk); // #(`CYCLE)
+                @(negedge clk); // #(`CYCLE)
             end
             input_test = 8'b0;  Valid = 0;
             $display("Input done.");
