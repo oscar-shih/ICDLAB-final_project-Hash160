@@ -1,0 +1,77 @@
+RULECHECK 4.1M .................................... TOTAL Result Count = 1
+RULECHECK 4.29NOTICE .............................. TOTAL Result Count = 1
+RULECHECK 4.31A.8KA ............................... NOT EXECUTED
+RULECHECK 4.31B.a.8KA ............................. NOT EXECUTED
+RULECHECK 4.31B.b.8KA ............................. NOT EXECUTED
+RULECHECK 4.31C.a_d.8KA ........................... NOT EXECUTED
+RULECHECK 4.31C.b_c_e.8KA ......................... NOT EXECUTED
+RULECHECK 4.31D.8KA ............................... NOT EXECUTED
+RULECHECK 4.31A.12KA .............................. NOT EXECUTED
+RULECHECK 4.31B.a.12KA ............................ NOT EXECUTED
+RULECHECK 4.31B.b.12KA ............................ NOT EXECUTED
+RULECHECK 4.31C.12KA .............................. NOT EXECUTED
+RULECHECK 4.31D.12KA .............................. NOT EXECUTED
+RULECHECK 4.20F ................................... TOTAL Result Count = 1
+RULECHECK 4.20G ................................... TOTAL Result Count = 1
+RULECHECK 4.22F ................................... TOTAL Result Count = 1
+RULECHECK 4.22G ................................... TOTAL Result Count = 1
+RULECHECK 4.24F ................................... TOTAL Result Count = 1
+RULECHECK 4.24G ................................... TOTAL Result Count = 1
+RULECHECK 4.26F ................................... TOTAL Result Count = 1
+RULECHECK 4.26G ................................... TOTAL Result Count = 1
+RULECHECK 4.28F ................................... TOTAL Result Count = 1
+RULECHECK 4.28G ................................... TOTAL Result Count = 1
+RULECHECK 4.31E ................................... TOTAL Result Count = 1
+RULECHECK 4.31F ................................... TOTAL Result Count = 1
+RULECHECK 4.20C ................................... TOTAL Result Count = 4
+RULECHECK 4.22C ................................... TOTAL Result Count = 4
+RULECHECK 4.24C ................................... TOTAL Result Count = 4
+RULECHECK 6Aa.ME1 ................................. NOT EXECUTED
+RULECHECK 6Ab.ME1 ................................. NOT EXECUTED
+RULECHECK 6Ba.ME1 ................................. NOT EXECUTED
+RULECHECK 6Bb.ME1 ................................. NOT EXECUTED
+RULECHECK 6Aa.ME2 ................................. NOT EXECUTED
+RULECHECK 6Ab.ME2 ................................. NOT EXECUTED
+RULECHECK 6Ba.ME2 ................................. NOT EXECUTED
+RULECHECK 6Bb.ME2 ................................. NOT EXECUTED
+RULECHECK 6Aa.ME3 ................................. NOT EXECUTED
+RULECHECK 6Ab.ME3 ................................. NOT EXECUTED
+RULECHECK 6Ba.ME3 ................................. NOT EXECUTED
+RULECHECK 6Bb.ME3 ................................. NOT EXECUTED
+RULECHECK 6Aa.ME4 ................................. NOT EXECUTED
+RULECHECK 6Ab.ME4 ................................. NOT EXECUTED
+RULECHECK 6Ba.ME4 ................................. NOT EXECUTED
+RULECHECK 6Bb.ME4 ................................. NOT EXECUTED
+RULECHECK 6Aa.ME5 ................................. NOT EXECUTED
+RULECHECK 6Ab.ME5 ................................. NOT EXECUTED
+RULECHECK 6Ba.ME5 ................................. NOT EXECUTED
+RULECHECK 6Bb.ME5 ................................. NOT EXECUTED
+RULECHECK 6Aa.ME6 ................................. NOT EXECUTED
+RULECHECK 6Ab.ME6 ................................. NOT EXECUTED
+RULECHECK 6Ba.ME6 ................................. NOT EXECUTED
+RULECHECK 6Bb.ME6 ................................. NOT EXECUTED
+RULECHECK 5.1B .................................... NOT EXECUTED
+RULECHECK 5.1C .................................... NOT EXECUTED
+RULECHECK 5.1D .................................... NOT EXECUTED
+RULECHECK 5.1E .................................... NOT EXECUTED
+RULECHECK 5.1F .................................... NOT EXECUTED
+RULECHECK 5.1G .................................... NOT EXECUTED
+RULECHECK 5.1H .................................... NOT EXECUTED
+RULECHECK 5.1I .................................... NOT EXECUTED
+RULECHECK 5.1J .................................... NOT EXECUTED
+RULECHECK 5.1L .................................... NOT EXECUTED
+RULECHECK 5.1M .................................... NOT EXECUTED
+RULECHECK 5.1N .................................... NOT EXECUTED
+RULECHECK 5.1O .................................... NOT EXECUTED
+RULECHECK 5.1P .................................... NOT EXECUTED
+RULECHECK 5.1R .................................... NOT EXECUTED
+RULECHECK 5.1Q .................................... NOT EXECUTED
+RULECHECK 5.1S .................................... NOT EXECUTED
+RULECHECK 5.1T .................................... NOT EXECUTED
+RULECHECK 5.1U .................................... NOT EXECUTED
+RULECHECK 5.1V .................................... NOT EXECUTED
+RULECHECK 5.1W .................................... NOT EXECUTED
+RULECHECK 5.RECOMMEND ............................. NOT EXECUTED
+RULECHECK 5.NOTICE1 ............................... NOT EXECUTED
+RULECHECK 5.NOTICE2 ............................... NOT EXECUTED
+RULECHECK 6.1A.M6 ................................. TOTAL Result Count = 36
